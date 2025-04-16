@@ -41,13 +41,40 @@ class _GeneratorpageState extends State<Generatorpage> {
     }
   }
 
-  Future<void> runPythonScript() async {
+  // run conversion script
+  Future<void> runPythonScripA() async {
     try {
       final shell = Shell();
 
       // Run the conversion script
       await shell.run('''
       python "${Directory.current.path}/assets/reportgenerator.py" "$selectedFilePath" "$outputDirectoryPath"
+    ''');
+
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text('Report created successfully'),
+          duration: Duration(seconds: 100),
+        ),
+      );
+    } catch (e) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text('Error running Python script: ${e.toString()}'),
+          duration: Duration(seconds: 100),
+        ),
+      );
+    }
+  }
+
+  //run presentation script
+  Future<void> runPythonScripB() async {
+    try {
+      final shell = Shell();
+
+      // Run the conversion script
+      await shell.run('''
+      python "${Directory.current.path}/assets/graphgenerator.py" "$selectedFilePath" "$outputDirectoryPath"
     ''');
 
       ScaffoldMessenger.of(context).showSnackBar(
@@ -144,19 +171,38 @@ class _GeneratorpageState extends State<Generatorpage> {
               ),
             ),
 
-            Padding(
-              padding: const EdgeInsets.all(15.0),
-              child: SizedBox(
-                width: 1000,
-                height: 100,
-                child: ElevatedButton(
-                  onPressed: () => runPythonScript(),
-                  child: Text(
-                    "Create weekly reports",
-                    style: TextStyle(fontSize: 20),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                Padding(
+                  padding: const EdgeInsets.all(15.0),
+                  child: SizedBox(
+                    width: 500,
+                    height: 100,
+                    child: ElevatedButton(
+                      onPressed: () => runPythonScripA(),
+                      child: Text(
+                        "Create weekly reports",
+                        style: TextStyle(fontSize: 20),
+                      ),
+                    ),
                   ),
                 ),
-              ),
+                Padding(
+                  padding: const EdgeInsets.all(15.0),
+                  child: SizedBox(
+                    width: 500,
+                    height: 100,
+                    child: ElevatedButton(
+                      onPressed: () => runPythonScripB(),
+                      child: Text(
+                        "Create weekly presentation charts",
+                        style: TextStyle(fontSize: 20),
+                      ),
+                    ),
+                  ),
+                ),
+              ],
             ),
           ],
         ),

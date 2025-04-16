@@ -19,5 +19,15 @@ structure and function of the python script:
 
 - looking slay 
 - fully functions 
-- just need to rearrange some columns 
+- just need to rearrange some columns DONE
+
 - also make NCF data positive 
+
+- next to do is generate graphs 
+
+for graph generator logic:
+- group by project 
+- add up tests completed, remaining, NCF, weekly completed 
+- group by project and broard type and redo adding up tests completed, remaining, NCF, weekly completed 
+- create graphs for each above catagory 
+- 

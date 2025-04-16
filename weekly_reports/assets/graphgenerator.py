@@ -52,35 +52,42 @@ def generate_summary(input_file, output_dir):
     first_col = 'Project'
     type_col = 'Broad type'
 
+    #grouped by project 
+    grouped = df.groupby([first_col])
 
-    # Group by both Project and Type
-    grouped = df.groupby([first_col, type_col])
+    summary_df = grouped.agg({
+        'Completed': 'sum',
+        'Approved': 'sum',
+        'Checked': 'sum',
+        'Scheduled': 'sum',
+        'InProgress': 'sum',
+        'NCF? Restricted numbers': 'sum'
+    }).reset_index()
 
-    desired_order = [
-    'Project', 'Test Type', 'Broad type',
-    'Scheduled', 'InProgress', 'Completed', 'Checked', 'Approved', 'Total',
-    'NCF? Restricted numbers', 'Week Approved Increase'
-    ]
+    # Create the final summary columns
+    summary_df['Total Completed'] = summary_df['Completed'] + summary_df['Approved'] + summary_df['Checked']
+    summary_df['Total Remaining'] = summary_df['Scheduled'] + summary_df['InProgress']
 
-    # Reorder columns (only those that are actually in df)
-    df = df[[col for col in desired_order if col in df.columns]]
+    # Select and rename columns
+    final_df = summary_df[[first_col, 'Total Completed', 'Total Remaining', 'NCF? Restricted numbers']]
+    final_df = final_df.rename(columns={'NCF? Restricted numbers': 'Total NCF? Restricted numbers'})
 
 
-    # Output Excel file path
-    output_path = os.path.join(output_dir, f"weekly_report_summary_{D}.xlsx")
+    # Set output file path
+    output_file = os.path.join(output_dir, f"summary_output_{D}.xlsx")
 
-    # Create Excel writer using openpyxl engine
-    with pd.ExcelWriter(output_path, engine='openpyxl') as writer:
-        for (project, test_type), group in grouped:
-            sheet_name = f"{project[:15]}_{test_type[:10]}"  
-            print(f"Writing group: {sheet_name}")
-            group.to_excel(writer, sheet_name=sheet_name, index=False)
+    # Create a writer object
+    with pd.ExcelWriter(output_file, engine='openpyxl') as writer:
+        # Write individual dataframes to separate sheets
+        summary_df.to_excel(writer, sheet_name='Completed', index=False)
+    
 
-    print(f"Report generated: {output_path}")
+    print(f"\n Summary Excel file saved to: {output_file}")
+
 
 if __name__ == "__main__":
     if len(sys.argv) < 3:
-        print("Usage: python reportgenerator.py <input_file> <output_dir>")
+        print("Usage: python graphgenerator.py <input_file> <output_dir>")
         sys.exit(1)
 
     input_file = sys.argv[1]
