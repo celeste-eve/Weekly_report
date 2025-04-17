@@ -51,6 +51,8 @@ def generate_summary(input_file, output_dir):
 
     first_col = 'Project'
     type_col = 'Broad type'
+    df['NCF? Restricted numbers'] = pd.to_numeric(df['NCF? Restricted numbers'], errors='coerce').abs()
+
 
 
     # Group by both Project and Type

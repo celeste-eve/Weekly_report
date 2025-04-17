@@ -21,7 +21,7 @@ structure and function of the python script:
 - fully functions 
 - just need to rearrange some columns DONE
 
-- also make NCF data positive 
+- also make NCF data positive DONE 
 
 - next to do is generate graphs 
 
@@ -31,3 +31,5 @@ for graph generator logic:
 - group by project and broard type and redo adding up tests completed, remaining, NCF, weekly completed 
 - create graphs for each above catagory 
 - 
+
+- need to only print the 3 columns needed and work on the grouped by test type data 
