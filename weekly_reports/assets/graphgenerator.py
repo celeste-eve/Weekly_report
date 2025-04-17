@@ -5,6 +5,7 @@ from openpyxl.styles import Font, PatternFill, Alignment
 from openpyxl.chart import BarChart, PieChart, Reference
 from openpyxl.utils import get_column_letter
 import datetime
+from fpdf import FPDF
 
 # Get current timestamp
 D = datetime.datetime.now().strftime("%Y-%m-%d %H_%M")
@@ -71,40 +72,61 @@ def generate_summary(input_file, output_dir):
 
     output_file = os.path.join(output_dir, f"summary_output_{D}.xlsx")
 
-    # WRITE TO EXCEL + CHARTS
-    with pd.ExcelWriter(output_file, engine='openpyxl') as writer:
-        final_df.to_excel(writer, sheet_name='Totals for each project', index=False)
-        groupedC_df.to_excel(writer, sheet_name='Test type and project', index=False)
+    # CREATING A PDF REPORT
+    pdf = FPDF()
+    pdf.add_page()
+    pdf.set_font("Arial", size=12)
+    pdf.cell(200, 10, txt="Weekly Summary Report", ln=True, align='C')
 
-        workbook = writer.book
-        sheet = writer.sheets['Totals for each project']
+    def add_table_to_pdf(dataframe, title):
+        pdf.set_font("Arial", 'B', 12)
+        pdf.cell(200, 10, txt=title.encode('latin-1', 'replace').decode('latin-1'), ln=True, align='C')
+        pdf.set_font("Arial", size=10)
 
-        # PIE CHART
-        pie = PieChart()
-        pie.title = "Weekly Completion by Project"
-        labels = Reference(sheet, min_col=1, min_row=2, max_row=1 + len(final_df))
-        data = Reference(sheet, min_col=5, min_row=1, max_row=1 + len(final_df))  # 'Week Approved Increase'
-        pie.add_data(data, titles_from_data=True)
-        pie.set_categories(labels)
-        pie.height = 7
-        pie.width = 9
-        sheet.add_chart(pie, "H2")
+        col_widths = [30] * len(dataframe.columns)  # Set a fixed width per column
+        row_height = 10  # Base height; will increase for multi-line
+        line_spacing = 5  # Height of one line of text
 
-        # BAR CHART
-        bar = BarChart()
-        bar.type = "col"
-        bar.title = "Project Progress"
-        bar.y_axis.title = 'Samples'
-        bar.x_axis.title = 'Project'
-        bar.grouping = "stacked"
+        # Header
+        y_before = pdf.get_y()
+        x_start = pdf.get_x()
+        for i, col in enumerate(dataframe.columns):
+            header = str(col).encode('latin-1', 'replace').decode('latin-1')
+            pdf.multi_cell(col_widths[i], line_spacing, header, border=1, align='C')
+            pdf.set_xy(x_start + sum(col_widths[:i+1]), y_before)
+        pdf.ln(row_height)
 
-        data = Reference(sheet, min_col=2, max_col=4, min_row=1, max_row=1 + len(final_df))
-        categories = Reference(sheet, min_col=1, min_row=2, max_row=1 + len(final_df))
-        bar.add_data(data, titles_from_data=True)
-        bar.set_categories(categories)
-        bar.height = 10
-        bar.width = 15
-        sheet.add_chart(bar, "H20")
+        # Rows
+        for _, row in dataframe.iterrows():
+            x_start = pdf.get_x()
+            y_start = pdf.get_y()
+            max_y = y_start
+
+            # First pass to calculate max height in this row
+            heights = []
+            for i, item in enumerate(row):
+                text = str(item).encode('latin-1', 'replace').decode('latin-1')
+                lines = pdf.multi_cell(col_widths[i], line_spacing, text, border=0, align='L', split_only=True)
+                heights.append(len(lines) * line_spacing)
+                max_y = max(max_y, y_start + len(lines) * line_spacing)
+
+            # Second pass to actually print the cells
+            for i, item in enumerate(row):
+                text = str(item).encode('latin-1', 'replace').decode('latin-1')
+                pdf.set_xy(x_start + sum(col_widths[:i]), y_start)
+                pdf.multi_cell(col_widths[i], line_spacing, text, border=1, align='L')
+
+            pdf.set_y(max_y)
+
+
+    # Add tables to PDF
+    add_table_to_pdf(final_df, "Project Summary")
+    pdf.add_page()
+    add_table_to_pdf(groupedC_df, "Detailed Summary by Type")
+
+    output_file_pdf = os.path.join(output_dir, f"New_summary_output_{D}.pdf")
+    pdf.output(output_file_pdf)
+
 
     print(f"\nSummary Excel file saved to: {output_file}")
 

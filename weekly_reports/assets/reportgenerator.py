@@ -68,7 +68,7 @@ def generate_summary(input_file, output_dir):
 
 
     # Output Excel file path
-    output_path = os.path.join(output_dir, f"weekly_report_summary_{D}.xlsx")
+    output_path = os.path.join(output_dir, f"weekly_project_report_summary_{D}.xlsx")
 
     # Create Excel writer using openpyxl engine
     with pd.ExcelWriter(output_path, engine='openpyxl') as writer:

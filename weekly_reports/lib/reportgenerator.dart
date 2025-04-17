@@ -182,7 +182,7 @@ class _GeneratorpageState extends State<Generatorpage> {
                     child: ElevatedButton(
                       onPressed: () => runPythonScripA(),
                       child: Text(
-                        "Create weekly reports",
+                        "Create weekly project reports",
                         style: TextStyle(fontSize: 20),
                       ),
                     ),

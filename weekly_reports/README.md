@@ -35,3 +35,9 @@ for graph generator logic:
 - 
 
 - need to only print the 3 columns needed and work on the grouped by test type data 
+
+IDEAS:
+- do it into PDF 
+- graphs to pdf - fpdf - tables and graphs 
+
+- need tot also rename the projects to the more simple name - or just shorten the names 
