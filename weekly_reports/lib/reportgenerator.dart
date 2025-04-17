@@ -155,7 +155,7 @@ class _GeneratorpageState extends State<Generatorpage> {
                     outputButton();
                   },
                   child: Text(
-                    "Select output Directory",
+                    "Select output folder",
                     style: TextStyle(fontSize: 20),
                   ),
                 ),

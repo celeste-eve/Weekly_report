@@ -26,9 +26,11 @@ structure and function of the python script:
 - next to do is generate graphs 
 
 for graph generator logic:
-- group by project 
-- add up tests completed, remaining, NCF, weekly completed 
-- group by project and broard type and redo adding up tests completed, remaining, NCF, weekly completed 
+- need to add weekly total completed to first DF DONE 
+
+- group by project DONE 
+- add up tests completed, remaining, NCF, weekly completed DONE 
+- group by project and broard type and redo adding up tests completed, remaining, NCF, weekly completed DONE 
 - create graphs for each above catagory 
 - 
 
